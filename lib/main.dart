@@ -43,6 +43,7 @@ class _MyAppState extends State<MyApp> {
   final _storage = const FlutterSecureStorage();
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
+  String _userRole = 'USER';
 
   @override
   void initState() {
@@ -52,8 +53,10 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _checkAuth() async {
     final token = await _storage.read(key: 'auth_token');
+    final role = await _storage.read(key: 'user_role');
     setState(() {
       _isAuthenticated = token != null;
+      _userRole = role ?? 'USER';
       _isCheckingAuth = false;
     });
   }
@@ -91,7 +94,9 @@ class _MyAppState extends State<MyApp> {
             }
             return AppRoutes.onGenerateRoute(settings);
           },
-          initialRoute: _isAuthenticated ? AppRoutes.homeDashboard : AppRoutes.login,
+          initialRoute: _isAuthenticated 
+              ? (_userRole == 'ADMIN' ? AppRoutes.adminDashboard : AppRoutes.homeDashboard)
+              : AppRoutes.login,
         );
       },
     );
