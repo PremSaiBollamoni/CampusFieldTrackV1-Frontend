@@ -38,7 +38,9 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.person_outline_rounded,
                 title: 'Profile',
                 subtitle: 'View and edit your profile',
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.profile);
+                },
               ),
               _SettingsTile(
                 icon: Icons.logout_rounded,
@@ -62,7 +64,9 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.info_outline_rounded,
                 title: 'About',
                 subtitle: 'Version 1.0.0',
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.about);
+                },
               ),
             ],
           ),
