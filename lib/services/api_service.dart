@@ -18,9 +18,14 @@ class ApiService {
           return handler.next(options);
         },
         onError: (error, handler) async {
+          // Only logout on 401 for auth-critical endpoints
           if (error.response?.statusCode == 401) {
-            await _storage.delete(key: 'auth_token');
-            await _storage.delete(key: 'user_id');
+            final path = error.requestOptions.path;
+            // Don't auto-logout for session detail failures
+            if (!path.contains('/sessions/')) {
+              await _storage.delete(key: 'auth_token');
+              await _storage.delete(key: 'user_id');
+            }
           }
           return handler.next(error);
         },
@@ -89,6 +94,43 @@ class ApiService {
     return response.data['data'];
   }
 
+  Future<Map<String, dynamic>> getUser() async {
+    try {
+      final userId = await _storage.read(key: 'user_id');
+      if (userId == null) throw Exception('Not logged in');
+      final response = await _dio.get('/user?id=$userId');
+      return response.data['data'] ?? {};
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateUser(Map<String, dynamic> data) async {
+    try {
+      final userId = await _storage.read(key: 'user_id');
+      if (userId == null) throw Exception('Not logged in');
+      await _dio.put('/user?id=$userId', data: data);
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      final userId = await _storage.read(key: 'user_id');
+      if (userId == null) throw Exception('Not logged in');
+      await _dio.put('/user/password?id=$userId', data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      });
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
   Future<void> logout() async {
     await _storage.delete(key: 'auth_token');
     await _storage.delete(key: 'user_id');
@@ -101,5 +143,75 @@ class ApiService {
   Future<void> saveToken(String token, String userId) async {
     await _storage.write(key: 'auth_token', value: token);
     await _storage.write(key: 'user_id', value: userId);
+  }
+
+  Future<void> saveRole(String role) async {
+    await _storage.write(key: 'user_role', value: role);
+  }
+
+  Future<String?> getRole() async {
+    return await _storage.read(key: 'user_role');
+  }
+
+  Future<Map<String, dynamic>> getAdminStats() async {
+    try {
+      final response = await _dio.get('/admin/stats');
+      return response.data['data'] ?? {};
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminUsers() async {
+    try {
+      final response = await _dio.get('/admin/users');
+      return List<Map<String, dynamic>>.from(response.data['data'] ?? []);
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllSessions() async {
+    try {
+      print('🌐 API: GET /admin/sessions/all');
+      final response = await _dio.get('/admin/sessions/all');
+      print('📥 Response: ${response.data}');
+      return List<Map<String, dynamic>>.from(response.data['data'] ?? []);
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<int>> downloadExportAllUsers() async {
+    try {
+      print('🌐 API: GET /admin/export/all');
+      final response = await _dio.get(
+        '/admin/export/all',
+        options: Options(responseType: ResponseType.bytes),
+      );
+      
+      return List<int>.from(response.data);
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<int>> downloadExportUser(String userId) async {
+    try {
+      print('🌐 API: GET /admin/export/user/$userId');
+      final response = await _dio.get(
+        '/admin/export/user/$userId',
+        options: Options(responseType: ResponseType.bytes),
+      );
+      
+      return List<int>.from(response.data);
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
   }
 }
