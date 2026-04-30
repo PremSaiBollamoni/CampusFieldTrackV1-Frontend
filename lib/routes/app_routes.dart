@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../presentation/about_screen/about_screen.dart';
 import '../presentation/activity_detail_screen/activity_detail_screen.dart';
 import '../presentation/activity_history_screen/activity_history_screen.dart';
+import '../presentation/admin_dashboard_screen/admin_dashboard_screen.dart';
 import '../presentation/auth_screen/login_screen.dart';
 import '../presentation/home_dashboard_screen/home_dashboard_screen.dart';
 import '../presentation/live_tracking_screen/live_tracking_screen.dart';
+import '../presentation/profile_screen/profile_screen.dart';
 import '../presentation/settings_screen/settings_screen.dart';
 import '../services/tracking_service.dart';
 
@@ -16,6 +19,9 @@ class AppRoutes {
   static const String activityHistory = '/activity-history-screen';
   static const String activityDetail = '/activity-detail-screen';
   static const String settings = '/settings';
+  static const String profile = '/profile-screen';
+  static const String about = '/about-screen';
+  static const String adminDashboard = '/admin-dashboard';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const LoginScreen(),
@@ -24,6 +30,9 @@ class AppRoutes {
     liveTracking: (context) => const LiveTrackingScreen(),
     activityHistory: (context) => const ActivityHistoryScreen(),
     settings: (context) => const SettingsScreen(),
+    profile: (context) => const ProfileScreen(),
+    about: (context) => const AboutScreen(),
+    adminDashboard: (context) => const AdminDashboardScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -42,6 +51,10 @@ class AppRoutes {
           }
         }
         return _buildPageRoute(ActivityDetailScreen(sessionData: session));
+      case profile:
+        return _buildPageRoute(const ProfileScreen());
+      case about:
+        return _buildPageRoute(const AboutScreen());
       default:
         return _buildPageRoute(const HomeDashboardScreen());
     }
