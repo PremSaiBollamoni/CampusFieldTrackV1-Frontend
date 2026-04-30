@@ -56,14 +56,23 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
     // Accept TrackingSession directly or look up from service
     if (widget.sessionData is TrackingSession) {
       _session = widget.sessionData as TrackingSession;
+      print('✅ Session loaded directly: ${_session!.id}');
     } else if (widget.sessionData is Map<String, dynamic>) {
       // Legacy path - try to find session by id
       final id = (widget.sessionData as Map<String, dynamic>)['id'] as String?;
+      print('🔍 Looking up session by ID: $id');
       if (id != null) {
         _session = TrackingService().completedSessions
             .where((s) => s.id == id)
             .firstOrNull;
+        if (_session != null) {
+          print('✅ Session found: ${_session!.id}');
+        } else {
+          print('❌ Session not found in TrackingService');
+        }
       }
+    } else {
+      print('❌ Invalid sessionData type: ${widget.sessionData.runtimeType}');
     }
 
     if (_session != null) {
