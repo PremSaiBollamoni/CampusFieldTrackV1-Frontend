@@ -96,12 +96,38 @@
 </details>
 
 <details open>
+<summary><b>👤 User Management</b></summary>
+<br/>
+
+- ✅ **Profile management** with username and email editing
+- ✅ **Password change** with current password verification
+- ✅ **About screen** with app information and version
+- ✅ **Settings panel** with profile and about navigation
+
+</details>
+
+<details open>
+<summary><b>👨‍💼 Admin Dashboard</b></summary>
+<br/>
+
+- ✅ **Role-based access** (ADMIN/USER) with automatic routing
+- ✅ **Real-time statistics** (total users, sessions today, distance, stops)
+- ✅ **Interactive map** showing all user sessions with routes
+- ✅ **User selection** to filter and view individual user routes
+- ✅ **Session switcher** to toggle between all sessions or specific ones
+- ✅ **Excel export** for all users or individual user data
+- ✅ **Professional UI** with glassmorphism and gradient effects
+
+</details>
+
+<details open>
 <summary><b>💾 Data Export</b></summary>
 <br/>
 
 - ✅ **GPX format** for GPS applications
 - ✅ **CSV format** for spreadsheet analysis
 - ✅ **JSON format** for custom processing
+- ✅ **Excel export** (admin only) with formatted spreadsheets
 - ✅ **Downloads folder export** for easy file access
 - ✅ **Clipboard fallback** if storage permission denied
 
@@ -113,6 +139,7 @@
 
 - ✅ **JWT-based authentication** with secure token storage
 - ✅ **Login/Register** with email validation
+- ✅ **Role-based routing** (Admin → Dashboard, User → Home)
 - ✅ **Auto-sync to backend** after session completion
 - ✅ **Secure storage** using flutter_secure_storage
 
@@ -122,7 +149,8 @@
 <summary><b>🎨 Modern UI/UX</b></summary>
 <br/>
 
-- ✅ **Glass morphism design** with backdrop blur effects
+- ✅ **Premium gradient design** with animated login screen
+- ✅ **Glass morphism effects** with backdrop blur
 - ✅ **Smooth animations** with custom curves
 - ✅ **Responsive layout** using Sizer package
 - ✅ **Dark theme** optimized for outdoor use
@@ -211,20 +239,26 @@ flutter build apk --release
 
 ```
 lib/
-├── main.dart                          # App entry point
+├── main.dart                          # App entry point with role-based routing
 ├── routes/
-│   └── app_routes.dart               # Navigation routes
+│   └── app_routes.dart               # Navigation routes (login, home, admin, profile, about)
 ├── services/
 │   ├── tracking_service.dart         # GPS tracking logic
-│   ├── api_service.dart              # Backend API client
+│   ├── api_service.dart              # Backend API client with admin endpoints
 │   ├── export_service.dart           # File export (GPX/CSV/JSON)
 │   └── file_writer_mobile.dart       # Platform-specific file I/O
 ├── presentation/
 │   ├── auth_screen/
-│   │   └── login_screen.dart         # Login/Register UI
+│   │   └── login_screen.dart         # Premium gradient login/register UI
 │   ├── home_dashboard_screen/
 │   │   ├── home_dashboard_screen.dart
 │   │   └── widgets/                  # Dashboard components
+│   ├── admin_dashboard_screen/
+│   │   └── admin_dashboard_screen.dart # Admin panel with map and export
+│   ├── profile_screen/
+│   │   └── profile_screen.dart       # User profile management
+│   ├── about_screen/
+│   │   └── about_screen.dart         # App information
 │   ├── live_tracking_screen/
 │   │   ├── live_tracking_screen.dart # Real-time tracking UI
 │   │   └── widgets/                  # Tracking controls
@@ -233,7 +267,7 @@ lib/
 │   ├── activity_detail_screen/
 │   │   └── activity_detail_screen.dart
 │   └── settings_screen/
-│       └── settings_screen.dart
+│       └── settings_screen.dart      # Settings with profile/about navigation
 └── theme/
     └── app_theme.dart                # Color scheme & styles
 ```
@@ -270,7 +304,7 @@ class ApiService {
 #### Authentication
 ```dart
 POST /auth/register
-POST /auth/login
+POST /auth/login         // Returns JWT token + user role
 ```
 
 #### Session Management
@@ -278,6 +312,22 @@ POST /auth/login
 GET  /sessions              // Get all user sessions
 GET  /sessions/{id}         // Get session by ID
 POST /sessions/full-sync    // Upload complete session
+```
+
+#### User Management
+```dart
+GET  /user?id={userId}      // Get user profile
+PUT  /user?id={userId}      // Update user profile
+PUT  /user/password?id={userId}  // Change password
+```
+
+#### Admin Endpoints
+```dart
+GET  /admin/stats           // Dashboard statistics
+GET  /admin/users           // All users (excludes admins)
+GET  /admin/sessions/all    // All sessions with routes
+GET  /admin/export/all      // Export all users to Excel
+GET  /admin/export/user/{userId}  // Export single user to Excel
 ```
 
 ### Request Example
