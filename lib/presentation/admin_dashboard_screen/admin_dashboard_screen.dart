@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../routes/app_routes.dart';
 import '../../services/api_service.dart';
 import '../../theme/app_theme.dart';
+import 'add_users_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -546,6 +547,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.download_rounded, color: AppTheme.success, size: 20),
                     onPressed: _showExportDialog,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: AppTheme.secondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.person_add_rounded, color: AppTheme.secondary, size: 20),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AddUsersScreen()),
+                      ).then((_) => _loadData());
+                    },
                   ),
                 ),
                 const SizedBox(width: 8),

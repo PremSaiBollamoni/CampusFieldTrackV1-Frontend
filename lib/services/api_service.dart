@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://20.40.5.66:8080/api';
+  static const String baseUrl = 'http://192.168.1.6:8080/api';
   final Dio _dio = Dio();
   final _storage = const FlutterSecureStorage();
 
@@ -179,6 +179,24 @@ class ApiService {
       final response = await _dio.get('/admin/sessions/all');
       print('📥 Response: ${response.data}');
       return List<Map<String, dynamic>>.from(response.data['data'] ?? []);
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> bulkImportUsers(List<Map<String, dynamic>> users) async {
+    try {
+      print('🌐 API: POST /auth/bulk-import');
+      print('📤 Importing ${users.length} users');
+      
+      final response = await _dio.post(
+        '/auth/bulk-import',
+        data: {'users': users},
+      );
+      
+      print('📥 Response: ${response.data}');
+      return response.data['data'] ?? {};
     } catch (e) {
       print('❌ API Error: $e');
       rethrow;
