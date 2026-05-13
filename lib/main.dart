@@ -85,9 +85,16 @@ class _MyAppState extends State<MyApp> {
             );
           },
           debugShowCheckedModeBanner: false,
-          home: _isAuthenticated 
-              ? (_userRole == 'ADMIN' ? const AdminDashboardScreen() : const HomeDashboardScreen())
-              : const LoginScreen(),
+          initialRoute: _isAuthenticated 
+              ? (_userRole == 'ADMIN' ? AppRoutes.adminDashboard : AppRoutes.homeDashboard)
+              : AppRoutes.login,
+          routes: AppRoutes.routes,
+          onGenerateRoute: AppRoutes.onGenerateRoute,
+          onUnknownRoute: (settings) {
+            return MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            );
+          },
         );
       },
     );
