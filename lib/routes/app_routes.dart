@@ -24,7 +24,6 @@ class AppRoutes {
   static const String adminDashboard = '/admin-dashboard';
 
   static Map<String, WidgetBuilder> routes = {
-    initial: (context) => const LoginScreen(),
     login: (context) => const LoginScreen(),
     homeDashboard: (context) => const HomeDashboardScreen(),
     liveTracking: (context) => const LiveTrackingScreen(),

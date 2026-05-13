@@ -72,6 +72,16 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
+    // Determine home screen based on auth status
+    Widget homeScreen;
+    if (_isAuthenticated) {
+      homeScreen = _userRole == 'ADMIN' 
+          ? const AdminDashboardScreen() 
+          : const HomeDashboardScreen();
+    } else {
+      homeScreen = const LoginScreen();
+    }
+
     return Sizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
@@ -85,9 +95,7 @@ class _MyAppState extends State<MyApp> {
             );
           },
           debugShowCheckedModeBanner: false,
-          initialRoute: _isAuthenticated 
-              ? (_userRole == 'ADMIN' ? AppRoutes.adminDashboard : AppRoutes.homeDashboard)
-              : AppRoutes.login,
+          home: homeScreen,
           routes: AppRoutes.routes,
           onGenerateRoute: AppRoutes.onGenerateRoute,
           onUnknownRoute: (settings) {
