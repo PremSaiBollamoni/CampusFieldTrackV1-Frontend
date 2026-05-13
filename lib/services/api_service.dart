@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8080/api';
+  // For mobile: Use PC's IP address
+  // For web: Use 'localhost'
+  static const String baseUrl = 'http://20.40.11.134:8080/api';
   final Dio _dio = Dio();
   final _storage = const FlutterSecureStorage();
 
