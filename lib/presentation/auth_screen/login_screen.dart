@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   
   bool _isLoading = false;
   bool _isLogin = true;
+  bool _obscurePassword = true;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -251,9 +252,19 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               focusNode: _passwordFocus,
                               hintText: 'Password',
                               icon: Icons.lock_outline_rounded,
-                              obscureText: true,
+                              obscureText: _obscurePassword,
                               textInputAction: TextInputAction.done,
                               onSubmitted: (_) => _handleAuth(),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  color: AppTheme.onDarkMuted,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() => _obscurePassword = !_obscurePassword);
+                                },
+                              ),
                             ),
                             const SizedBox(height: 24),
                             _PremiumButton(
@@ -318,6 +329,7 @@ class _PremiumTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final Function(String)? onSubmitted;
+  final Widget? suffixIcon;
 
   const _PremiumTextField({
     required this.controller,
@@ -328,6 +340,7 @@ class _PremiumTextField extends StatefulWidget {
     this.keyboardType,
     this.textInputAction,
     this.onSubmitted,
+    this.suffixIcon,
   });
 
   @override
@@ -385,6 +398,7 @@ class _PremiumTextFieldState extends State<_PremiumTextField> {
             color: _isFocused ? AppTheme.primary : AppTheme.onDarkMuted,
             size: 20,
           ),
+          suffixIcon: widget.suffixIcon,
           filled: true,
           fillColor: AppTheme.surfaceVariant,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -400,6 +414,7 @@ class _PremiumTextFieldState extends State<_PremiumTextField> {
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(color: AppTheme.primary, width: 2),
           ),
+          enabled: true,
         ),
       ),
     );
