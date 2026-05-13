@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../routes/app_routes.dart';
 import '../../services/api_service.dart';
 import '../../theme/app_theme.dart';
+import '../admin_dashboard_screen/admin_dashboard_screen.dart';
+import '../home_dashboard_screen/home_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -102,9 +104,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
         if (mounted) {
           if (role == 'ADMIN') {
-            Navigator.pushReplacementNamed(context, AppRoutes.adminDashboard);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
+            );
           } else {
-            Navigator.pushReplacementNamed(context, AppRoutes.homeDashboard);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeDashboardScreen()),
+            );
           }
         }
       }

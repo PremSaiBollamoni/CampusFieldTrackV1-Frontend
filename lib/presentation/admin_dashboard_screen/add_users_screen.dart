@@ -18,6 +18,9 @@ class _AddUsersScreenState extends State<AddUsersScreen> with SingleTickerProvid
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _empIdController = TextEditingController();
+  final _employmentTypeController = TextEditingController();
+  final _designationController = TextEditingController();
+  final _projectAssignedController = TextEditingController();
   
   // Bulk import
   final _bulkDataController = TextEditingController();
@@ -38,12 +41,16 @@ class _AddUsersScreenState extends State<AddUsersScreen> with SingleTickerProvid
     _usernameController.dispose();
     _emailController.dispose();
     _empIdController.dispose();
+    _employmentTypeController.dispose();
+    _designationController.dispose();
+    _projectAssignedController.dispose();
     _bulkDataController.dispose();
     super.dispose();
   }
 
   Future<void> _addSingleUser() async {
-    if (_usernameController.text.isEmpty || _emailController.text.isEmpty || _empIdController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || _emailController.text.isEmpty || _empIdController.text.isEmpty ||
+        _employmentTypeController.text.isEmpty || _designationController.text.isEmpty || _projectAssignedController.text.isEmpty) {
       setState(() => _errorMessage = 'All fields are required');
       return;
     }
@@ -60,6 +67,10 @@ class _AddUsersScreenState extends State<AddUsersScreen> with SingleTickerProvid
         _usernameController.text,
         _emailController.text,
         password,
+        empId: _empIdController.text,
+        employmentType: _employmentTypeController.text,
+        designation: _designationController.text,
+        projectAssigned: _projectAssignedController.text,
       );
 
       if (response['success'] == true) {
@@ -68,6 +79,9 @@ class _AddUsersScreenState extends State<AddUsersScreen> with SingleTickerProvid
           _usernameController.clear();
           _emailController.clear();
           _empIdController.clear();
+          _employmentTypeController.clear();
+          _designationController.clear();
+          _projectAssignedController.clear();
         });
       } else {
         setState(() => _errorMessage = response['message'] ?? 'Failed to add user');
@@ -97,28 +111,32 @@ class _AddUsersScreenState extends State<AddUsersScreen> with SingleTickerProvid
 
       for (final line in lines) {
         final parts = line.split('\t').map((p) => p.trim()).toList();
-        if (parts.length >= 3) {
+        if (parts.length >= 6) {
           // Skip header row
           if (parts[0].toLowerCase() == 'sl no' || parts[0].toLowerCase() == 'sl') continue;
           
+          // Parse: Sl No, Emp ID, Name, Employment Type, Designation, Project Assigned
           final empId = parts[1];
           final name = parts[2];
+          final employmentType = parts[3];
+          final designation = parts[4];
+          final projectAssigned = parts[5];
           
           if (empId.isNotEmpty && name.isNotEmpty) {
             employees.add({
               'empId': empId,
               'name': name,
-              'email': '${empId.toLowerCase()}@ubi.local',
-              'designation': parts.length > 4 ? parts[4] : '',
-              'projectAssigned': parts.length > 5 ? parts[5] : '',
-              'employmentType': parts.length > 3 ? parts[3] : '',
+              'email': '${empId}@cft.in',
+              'employmentType': employmentType,
+              'designation': designation,
+              'projectAssigned': projectAssigned,
             });
           }
         }
       }
 
       if (employees.isEmpty) {
-        setState(() => _errorMessage = 'No valid employee data found');
+        setState(() => _errorMessage = 'No valid employee data found. Expected format: Sl No, Emp ID, Name, Employment Type, Designation, Project Assigned (tab-separated)');
         return;
       }
 
@@ -312,6 +330,102 @@ class _AddUsersScreenState extends State<AddUsersScreen> with SingleTickerProvid
             controller: _emailController,
             decoration: InputDecoration(
               hintText: 'e.g., ts0271@ubi.local',
+              hintStyle: GoogleFonts.manrope(color: AppTheme.onDarkMuted),
+              filled: true,
+              fillColor: AppTheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppTheme.onDarkMuted.withOpacity(0.2)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppTheme.onDarkMuted.withOpacity(0.2)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Employment Type',
+            style: GoogleFonts.manrope(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.onDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _employmentTypeController,
+            decoration: InputDecoration(
+              hintText: 'e.g., Full Time',
+              hintStyle: GoogleFonts.manrope(color: AppTheme.onDarkMuted),
+              filled: true,
+              fillColor: AppTheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppTheme.onDarkMuted.withOpacity(0.2)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppTheme.onDarkMuted.withOpacity(0.2)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Designation',
+            style: GoogleFonts.manrope(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.onDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _designationController,
+            decoration: InputDecoration(
+              hintText: 'e.g., District Manager',
+              hintStyle: GoogleFonts.manrope(color: AppTheme.onDarkMuted),
+              filled: true,
+              fillColor: AppTheme.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppTheme.onDarkMuted.withOpacity(0.2)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppTheme.onDarkMuted.withOpacity(0.2)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppTheme.primary, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Project Assigned',
+            style: GoogleFonts.manrope(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.onDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _projectAssignedController,
+            decoration: InputDecoration(
+              hintText: 'e.g., UBI, Telangana',
               hintStyle: GoogleFonts.manrope(color: AppTheme.onDarkMuted),
               filled: true,
               fillColor: AppTheme.surface,

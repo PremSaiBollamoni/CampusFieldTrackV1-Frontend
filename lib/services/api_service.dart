@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.6:8080/api';
+  static const String baseUrl = 'http://localhost:8080/api';
   final Dio _dio = Dio();
   final _storage = const FlutterSecureStorage();
 
@@ -33,13 +33,25 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> register(String username, String email, String password) async {
+  Future<Map<String, dynamic>> register(
+    String username, 
+    String email, 
+    String password, {
+    String? empId,
+    String? employmentType,
+    String? designation,
+    String? projectAssigned,
+  }) async {
     final response = await _dio.post(
       '/auth/register',
       data: {
         'username': username,
         'email': email,
         'password': password,
+        if (empId != null) 'empId': empId,
+        if (employmentType != null) 'employmentType': employmentType,
+        if (designation != null) 'designation': designation,
+        if (projectAssigned != null) 'projectAssigned': projectAssigned,
       },
     );
     return response.data;
@@ -197,6 +209,43 @@ class ApiService {
       
       print('📥 Response: ${response.data}');
       return response.data['data'] ?? {};
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getAllUsers() async {
+    try {
+      print('🌐 API: GET /auth/users');
+      final response = await _dio.get('/auth/users');
+      return response.data;
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteUser(String username) async {
+    try {
+      print('🌐 API: DELETE /auth/users/$username');
+      final response = await _dio.delete('/auth/users/$username');
+      return response.data;
+    } catch (e) {
+      print('❌ API Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteMultipleUsers(List<String> usernames) async {
+    try {
+      print('🌐 API: POST /auth/users/delete-multiple');
+      print('📤 Deleting ${usernames.length} users');
+      final response = await _dio.post(
+        '/auth/users/delete-multiple',
+        data: {'usernames': usernames},
+      );
+      return response.data;
     } catch (e) {
       print('❌ API Error: $e');
       rethrow;

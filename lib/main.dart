@@ -3,14 +3,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../core/app_export.dart';
 import '../presentation/auth_screen/login_screen.dart';
+import '../presentation/home_dashboard_screen/home_dashboard_screen.dart';
+import '../presentation/admin_dashboard_screen/admin_dashboard_screen.dart';
 import '../services/api_service.dart';
 import '../services/tracking_service.dart';
 import '../widgets/custom_error_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await TrackingService().initialize();
 
   bool hasShownError = false;
 
@@ -85,18 +85,9 @@ class _MyAppState extends State<MyApp> {
             );
           },
           debugShowCheckedModeBanner: false,
-          routes: AppRoutes.routes,
-          onGenerateRoute: (settings) {
-            if (!_isAuthenticated &&
-                settings.name != AppRoutes.login &&
-                settings.name != AppRoutes.initial) {
-              return MaterialPageRoute(builder: (_) => LoginScreen());
-            }
-            return AppRoutes.onGenerateRoute(settings);
-          },
-          initialRoute: _isAuthenticated 
-              ? (_userRole == 'ADMIN' ? AppRoutes.adminDashboard : AppRoutes.homeDashboard)
-              : AppRoutes.login,
+          home: _isAuthenticated 
+              ? (_userRole == 'ADMIN' ? const AdminDashboardScreen() : const HomeDashboardScreen())
+              : const LoginScreen(),
         );
       },
     );
